@@ -21,10 +21,14 @@ function device_info_test_helper()
   container="kw-${distro}"
   buffer=$(container_exec "${container}" 'kw device --local')
 
+  say "----init-----"
+  say "$buffer"
+  say "----final----"
+
   # some fields must be ignored because they surely won't match.
   filter=(
-    'Root filesystem' 'Size' 'Mounted on'                        # storage fields
-    'Distribution' 'Distribution version' 'Desktop environments' # desktop fields
+    'Root filesystem' 'Size' 'Mounted on'                                            # storage fields
+    'Distribution' 'Distribution base' 'Distribution version' 'Desktop environments' # desktop fields
   )
 
   # add | separator to each filter item.
@@ -36,6 +40,9 @@ function device_info_test_helper()
   # get the output, after applying filter.
   output=$(printf '%s' "${buffer}" | grep --invert-match --perl-regexp "${filter_regex}")
 
+  say "--------- OUTPUT INIT -------------"
+  say "$output"
+  say "--------- OUTPUT FINAL ------------"
   # get the expected output from the host machine, also filtering information.
   expected_output=$(device_main --local | grep --invert-match --perl-regexp "${filter_regex}")
 
