@@ -16,8 +16,10 @@ jobs:
         run: |
           whoami
           ls -la
-          git log -p | head -n 50
-          echo "$github.base_ref"
+          echo "GitHub Base Ref: ${{ github.base_ref }}"
+          echo "GitHub Head Ref: ${{ github.head_ref }}"
+          echo "GitHub SHA: ${{ github.sha }}"
+
 
       - name: Update the system
         run: sudo apt update -y
