@@ -12,8 +12,18 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Debugging
+        run: |
+          whoami
+          ls -la
+          git log -p | head -n 50
+          echo "${github.base_ref}"
+
+
       - name: Update the system
         run: sudo apt update -y
+
+        
 
       - name: Install dependencies
         run: |
