@@ -3,7 +3,20 @@ on:
   [push, pull_request]
 
 jobs:
+  initialize-repository:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
   integration-tests:
+    needs: initialize-repository
     runs-on: ubuntu-latest
 
     steps:
@@ -19,5 +32,22 @@ jobs:
         run: |
           sudo apt install -y shunit2 podman
 
-      - name: Integration tests
+      - name: Check if build script changed in the PR
+        id: build_check
+        run: |
+          # Fetch the latest changes from the base branch 'unstable'
+          git fetch origin unstable:refs/remotes/origin/unstable --depth=1
+          # Check if 'src/build.sh' has changed between 'unstable' and the current branch
+          if git diff --name-only origin/unstable...${{ github.head_ref }} | grep -q 'src/build.sh'; then
+            echo "build_script_changed=true" >> $GITHUB_ENV
+          else
+            echo "build_script_changed=false" >> $GITHUB_ENV
+          fi
+
+      - name: Integration tests for build
+        if: env.build_script_changed == 'true'
+        run: ./run_tests.sh test build
+
+      - name: Other integration tests
+        if: env.build_script_changed == 'false'
         run: ./run_tests.sh --integration
