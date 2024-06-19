@@ -5,12 +5,12 @@ include "${KW_LIB_DIR}/lib/kw_config_loader.sh"
 declare -gA options_values
 
 # This function is responsible for manipulating kernel build operations such as
-# compile/cross-compile and menuconfig.
+# compile/cross-compile and menuconfig.........
 #
 # @flag How to display a command, see `src/lib/kwlib.sh` function `cmd_manager`
-# @raw_options String with all user options
+# @raw_options String with all user options....
 #
-# Return:
+# Return::
 # In case of successful return 0, otherwise, return 22 or 125.
 function build_kernel_main()
 {

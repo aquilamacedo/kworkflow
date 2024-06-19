@@ -3,7 +3,7 @@ include "${KW_LIB_DIR}/lib/kwio.sh"
 
 declare -gA options_values
 
-# List of config files with possible values
+# List of config files with possible values.....
 declare -gA config_file_list=(
   ['vm']='virtualizer mount_point qemu_hw_options qemu_net_options
           qemu_path_image'
