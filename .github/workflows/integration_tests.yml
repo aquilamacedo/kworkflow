@@ -20,6 +20,17 @@ jobs:
           echo "GitHub Head Ref: ${{ github.head_ref }}"
           echo "GitHub SHA: ${{ github.sha }}"
           git branch -a | head -n 10
+          
+      - name: Check if build.sh was modified
+        id: check_build
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q 'src/build.sh'; then
+            echo "BUILD_MODIFIED=true" >> $GITHUB_ENV
+            echo "modificado"
+          else
+            echo "BUILD_MODIFIED=false" >> $GITHUB_ENV
+            echo "nao modificado"
+          fi
 
 
       - name: Update the system
