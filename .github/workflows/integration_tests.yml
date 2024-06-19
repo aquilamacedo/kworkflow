@@ -29,34 +29,28 @@ jobs:
           git branch -a | head -n 10
           echo "GitHub Pull Request Sha: ${{ github.event.pull_request.base.sha }}"
 
-      - name: Determine base ref
-        id: determine_base_ref
-        run: |
-          echo "BASE_REF=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
-  
-      - name: Check if build.sh was modified
-        id: check_build
-        run: |
-          git fetch origin ${{ env.BASE_REF }}
-          BASE=$(git merge-base HEAD origin/${{ env.BASE_REF }})
-
-          echo "BASE = $BASE"
-          
-          if git diff --name-only $BASE HEAD | grep -q 'src/build.sh'; then
-            echo "BUILD_MODIFIED=true" >> $GITHUB_ENV
-            echo "build alterado"
-          else
-            echo "BUILD_MODIFIED=false" >> $GITHUB_ENV
-            echo "build nao alterado"
-          fi
-
       - name: Update the system
         run: sudo apt update -y
-        
-
+          
       - name: Install dependencies
         run: |
           sudo apt install -y shunit2 podman
 
+      - name: Fetch base ref
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+
+      - name: Check if src/build.sh is modified
+        id: check_build_script
+        run: |
+          if git diff --name-only ${{ github.event.pull_request.base.sha }} $GITHUB_SHA | grep -q "src/build.sh"; then
+            echo "BUILD_SCRIPT_CHANGED=true" >> $GITHUB_ENV
+          else
+            echo "BUILD_SCRIPT_CHANGED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Conditional kernel build
+        if: env.BUILD_SCRIPT_CHANGED == 'true'
+        run: ./run_tests.sh test build
+    
       - name: Integration tests
         run: ./run_tests.sh --integration
