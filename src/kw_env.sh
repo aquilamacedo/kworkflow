@@ -39,7 +39,7 @@ function env_main()
       use_target_env
       return "$?"
     fi
-    return 22 # EINVAL
+    return 22 # EINVAL.
   fi
 
   if [[ -n "${options_values['DESTROY']}" ]]; then
