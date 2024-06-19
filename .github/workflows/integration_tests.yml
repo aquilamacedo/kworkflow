@@ -20,14 +20,21 @@ jobs:
           echo "GitHub Head Ref: ${{ github.head_ref }}"
           echo "GitHub SHA: ${{ github.sha }}"
           git branch -a | head -n 10
+
+      - name: Determine base ref
+        id: determine_base_ref
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "BASE_REF=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
+          fi
           
       - name: Check if build.sh was modified
         id: check_build
         run: |
-          git fetch origin ${{ github.base_ref }}
-          BASE=$(git merge-base HEAD origin/${{ github.base_ref }})
+          git fetch origin ${{ env.BASE_REF }}
+          BASE=$(git merge-base HEAD origin/${{ env.BASE_REF }})
           
-          if git diff --name-only HEAD~1..HEAD | grep -q 'src/build.sh'; then
+          if git diff --name-only $BASE HEAD | grep -q 'src/build.sh'; then
             echo "BUILD_MODIFIED=true" >> $GITHUB_ENV
             echo "build alterado"
           else
