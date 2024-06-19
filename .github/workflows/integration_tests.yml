@@ -27,6 +27,7 @@ jobs:
           echo "GitHub Head Ref: ${{ github.head_ref }}"
           echo "GitHub SHA: ${{ github.sha }}"
           git branch -a | head -n 10
+          echo "GitHub Pull Request Sha: ${{ github.event.pull_request.base.sha }}"
 
       - name: Determine base ref
         id: determine_base_ref
